@@ -56,6 +56,8 @@ class Param:
             name = name.lower()
         if isinstance(self.type, typing._GenericAlias):
             type = yaml.safe_load
+        elif issubclass(self.type, (list, tuple)):
+            type = yaml.safe_load 
         else:
             type = self.type
         return name, dict(
@@ -74,7 +76,9 @@ class Config(collections.OrderedDict):
     Base class for config objects 
     """
 
-    def __init__(self, config, extra=None):
+    def __init__(self, values=None, extra=None):
+        if values is None:
+            values = {}
         if extra is None:
             extra = os.getenv('EASY_CONF_EXTRA', 'warn')
         if not extra in ('warn', 'raise', 'ignore'):
@@ -82,26 +86,26 @@ class Config(collections.OrderedDict):
         for k, v in self.__class__.get_params().items():
             if isinstance(v, Param):
                 v = v.copy()
-                if k in config:
-                    v.set_value(config.pop(k))
+                if k in values:
+                    v.set_value(values.pop(k))
                 super().__setitem__(k, v)
             else:
-                if k in config and not isinstance(config[k], dict):
+                if k in values and not isinstance(values[k], dict):
                     raise ValueError(
                         'Subconfig for key "{}" must be a dict. '.format(k) +
-                        'Received "{}"'.format(type(config[k]))
+                        'Received "{}"'.format(type(values[k]))
                     )
-                super().__setitem__(k, v(**config.pop(k, {})))
+                super().__setitem__(k, v(values.pop(k, {})))
         # If there is something left. 
-        if config:
+        if values:
             if extra == 'warn':
                 warnings.warn(
-                    'Received unexpected config values: "%s"\n' %  str(config) +
+                    'Received unexpected config values: "%s"\n' %  str(values) +
                     'To disable this warning, set `extra=ignore` or environ '
                     'EASY_CONF_EXTRA=ignore when instantiating the config class.'
                 )
             elif extra == 'raise':
-                raise ValueError('Received unexpected config values: %s' % str(config))
+                raise ValueError('Received unexpected config values: %s' % str(values))
 
 
     def __getitem__(self, key):

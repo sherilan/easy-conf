@@ -1,6 +1,6 @@
 
-from easy_conf.config import REQUIRED, USNET, Param, Config 
+from easy_conf.config import REQUIRED, UNSET, Param, Config 
 
 # Shorthand 
 C = Config 
-P = Param 
+P = Param
