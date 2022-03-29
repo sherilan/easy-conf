@@ -156,6 +156,20 @@ All config: SubConfig(
 )
 ```
 
+### The Config is a dict 
+
+The Config class is a dicitonary (inherits from OrderedDict) and can be used in most dict-ways, including the `**` operator. For instance.
+
+```python
+...
+
+def create_mlp(hidden_dim, hidden_num):
+  # Create mlp with hidden_dim and hidden_num as params 
+  pass 
+  
+mlp = create_mlp(**cfg.mlp)
+```
+
 
 
 
