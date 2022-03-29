@@ -106,7 +106,7 @@ All config: Config(
 
 A master config can be compiled from distinct config classes. 
 
-```
+```python
 # Somewhere else 
 class MLPConfig(ec.Config):
     hidden_dim = 64
